@@ -98,11 +98,11 @@ Resources:
           - optimal
         MinvCpus: 0
         MaxvCpus: 256
-        InstanceRole: !Sub "{{resolve:ssm:${ProjectName}-ComputeInstanceProfileArn:2}}"
+        InstanceRole: !Sub "{{resolve:ssm:${ProjectName}-ComputeInstanceProfileArn}}"
         Subnets:
           - !Ref "PublicSubnetA"
           - !Ref "PublicSubnetB"
         SecurityGroupIds:
           - !Sub "${ComputeSecurityGroup.GroupId}"
         Tags:
-          Name: !Sub ${ProjectName}-cumpute-env
+          Name: !Sub ${ProjectName}-cumpute-environment
