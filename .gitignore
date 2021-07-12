@@ -1,0 +1,57 @@
+# Directories #
+/bin/*
+*/.serverless/*
+node_modules
+
+# OS Files #
+.DS_Store
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.db
+*.log
+*.pyc
+*/*.out
+*.out
+*.zip
+
+######################
+# Windows
+######################
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+######################
+# OSX
+######################
+
+.DS_Store
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+
+######################
+# Eclipse Intellij
+######################
+
+.project
+*.bak
+*.swp
+*~.nib
+.classpath
+.settings/
+.idea/*
+*.iml
