@@ -1,7 +1,7 @@
 Parameters:
   ProjectName:
     Type: String
-    Default: dummy-ssm-paramter-project
+    Default: dummy-paramter-store-project
   VpcCidrBlock:
     Type: String
     Default: 192.168.0.0/16
@@ -83,14 +83,7 @@ Resources:
           Value: !Sub ${ProjectName}-sg
       VpcId: !Ref "Vpc"
 
-
   # ------------------------ コンピューティング環境 ------------------------
-  ComputeInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      InstanceProfileName: !Sub ${ProjectName}-profile
-      Roles:
-        - !Sub "{{resolve:ssm:${ProjectName}-ComputeInstanceRole}}"
   ComputeEnvironment:
     Type: "AWS::Batch::ComputeEnvironment"
     Properties:
@@ -110,4 +103,4 @@ Resources:
         SecurityGroupIds:
           - !Sub "${ComputeSecurityGroup.GroupId}"
         Tags:
-          Name: !Sub ${ProjectName}-cumpute-environment
+          Name: !Sub ${ProjectName}-cumpute-env

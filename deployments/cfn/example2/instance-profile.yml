@@ -1,7 +1,7 @@
 Parameters:
   ProjectName:
     Type: String
-    Default: dummy-ssm-paramter-project
+    Default: dummy-paramter-store-project
 
 Resources:
   ComputeInstanceRole:
@@ -22,7 +22,7 @@ Resources:
   ComputeInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Sub ${ProjectName}-profile
+      InstanceProfileName: !Sub ${ProjectName}-instance-profile
       Roles:
         - !Ref "ComputeInstanceRole"
   ## ------------- SSM -------------
