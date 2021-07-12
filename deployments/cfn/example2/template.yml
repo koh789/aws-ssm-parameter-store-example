@@ -62,6 +62,27 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-subnet-b
+  ComputeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${ProjectName}-sg
+      GroupDescription: !Sub ${ProjectName}-sg
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          Description: dummy
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-sg
+      VpcId: !Ref "Vpc"
+
 
   # ------------------------ コンピューティング環境 ------------------------
   ComputeInstanceProfile:
@@ -82,9 +103,11 @@ Resources:
           - optimal
         MinvCpus: 0
         MaxvCpus: 256
-        InstanceRole: !Sub "${ComputeInstanceProfile.Arn}"
+        InstanceRole: !Sub "{{resolve:ssm:${ProjectName}-ComputeInstanceProfileArn}}"
         Subnets:
           - !Ref "PublicSubnetA"
           - !Ref "PublicSubnetB"
+        SecurityGroupIds:
+          - !Sub "${ComputeSecurityGroup.GroupId}"
         Tags:
           Name: !Sub ${ProjectName}-cumpute-environment

@@ -19,11 +19,16 @@ Resources:
                 - ec2.amazonaws.com
             Action:
               - sts:AssumeRole
-
+  ComputeInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Sub ${ProjectName}-profile
+      Roles:
+        - !Ref "ComputeInstanceRole"
   ## ------------- SSM -------------
-  AwsBatchRoleArnSSM:
+  ComputeInstanceProfileArnSSM:
     Type: "AWS::SSM::Parameter"
     Properties:
-      Name: !Sub "${ProjectName}-ComputeInstanceRole"
+      Name: !Sub "${ProjectName}-ComputeInstanceProfileArn"
       Type: String
-      Value: !Ref "ComputeInstanceRole"
+      Value: !Sub "${ComputeInstanceProfile.Arn}"
