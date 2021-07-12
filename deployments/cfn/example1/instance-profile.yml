@@ -24,13 +24,12 @@ Resources:
   ComputeInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Sub ${ProjectName}-instance-profile-copy
+      InstanceProfileName: !Sub ${ProjectName}-instance-profile
       Roles:
         - !Ref "ComputeInstanceRole"
-  ## ------------- SSM -------------
-  ComputeInstanceProfileArnSSM:
-    Type: "AWS::SSM::Parameter"
-    Properties:
-      Name: !Sub "${ProjectName}-ComputeInstanceProfileArn"
-      Type: String
-      Value: !Sub "${ComputeInstanceProfile.Arn}"
+  ## ------------- Outputs -------------
+Outputs:
+  ComputeInstanceProfileArn:
+    Value: !Sub "${ComputeInstanceProfile.Arn}"
+    Export:
+      Name: ComputeInstanceProfileArn

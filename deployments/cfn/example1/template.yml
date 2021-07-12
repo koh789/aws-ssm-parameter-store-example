@@ -98,7 +98,7 @@ Resources:
           - optimal
         MinvCpus: 0
         MaxvCpus: 256
-        InstanceRole: !Sub "{{resolve:ssm:${ProjectName}-ComputeInstanceProfileArn:2}}"
+        InstanceRole: !ImportValue "ComputeInstanceProfileArn"
         Subnets:
           - !Ref "PublicSubnetA"
           - !Ref "PublicSubnetB"
