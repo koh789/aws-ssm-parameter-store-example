@@ -9,10 +9,10 @@ Parameters:
     Default: dummy_dir
   DatabaseName:
     Type: String
-    Default: dummy_database
+    Default: dummy_database2
   TableName:
     Type: String
-    Default: dummy
+    Default: dummy2
 
 Resources:
   FirehoseRole:
@@ -42,8 +42,9 @@ Resources:
                   - s3:ListBucket
                   - s3:ListBucketMultipartUploads
                   - s3:PutObject
-                Resource:
-                  - !Sub "{{resolve:ssm:${ProjectName}-S3Arn}}/*"
+                Resource: !Sub
+                  - "${Arn}/*"
+                  - Arn: !ImportValue "S3Arn"
               - Effect: Allow
                 Action:
                   - glue:GetTable
@@ -86,7 +87,7 @@ Resources:
               Type: string
           Location: !Sub
             - "s3://${S3Bucket}/${S3Dir}"
-            - S3Bucket: !Sub "{{resolve:ssm:${ProjectName}-S3FirehoseBucketName}}"
+            - S3Bucket: !ImportValue "S3FirehoseBucketName"
               S3Dir: !Ref "S3FirehoseDir"
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
@@ -105,8 +106,8 @@ Resources:
       DeliveryStreamName: !Sub "${ProjectName}-firehose" # Replacement
       DeliveryStreamType: DirectPut                                                          # Replacement
       ExtendedS3DestinationConfiguration:
-        RoleARN: !GetAtt FirehoseRole.Arn
-        BucketARN: !Sub "{{resolve:ssm:${ProjectName}-S3Arn}}"
+        RoleARN: !GetAtt "FirehoseRole.Arn"
+        BucketARN: !ImportValue "S3Arn"
         Prefix: !Sub "${S3FirehoseDir}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
         ErrorOutputPrefix: !Sub "${S3FirehoseDir}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/!{firehose:error-output-type}"
         BufferingHints:

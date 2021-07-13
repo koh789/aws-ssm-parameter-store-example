@@ -20,16 +20,12 @@ Resources:
         - Key: Name
           Value: !Sub "${ProjectName}-bucket"
 
-  ## ------------- SSM -------------
-  S3FirehoseBucketNameSSM:
-    Type: "AWS::SSM::Parameter"
-    Properties:
-      Name: !Sub "${ProjectName}-S3FirehoseBucketName"
-      Type: String
-      Value: !Ref "S3"
-  S3SSM:
-    Type: "AWS::SSM::Parameter"
-    Properties:
-      Name: !Sub "${ProjectName}-S3Arn"
-      Type: String
-      Value: !GetAtt "S3.Arn"
+Outputs:
+  S3FirehoseBucketName:
+    Value: !Ref "S3"
+    Export:
+      Name: S3FirehoseBucketName
+  S3Arn:
+    Value: !GetAtt "S3.Arn"
+    Export:
+      Name: S3Arn
