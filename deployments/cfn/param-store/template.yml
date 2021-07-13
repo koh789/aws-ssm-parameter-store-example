@@ -1,0 +1,47 @@
+Parameters:
+  ProjectName:
+    Type: String
+    AllowedValues:
+      - dummy-cross-ref-project
+      - dummy-param-store-project
+Resources:
+  FirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-firehose-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "firehose.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: !Sub "${ProjectName}-firehose-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource:
+                  - !Sub "{{resolve:ssm:${ProjectName}-S3Arn}}"
+                  - !Sub "{{resolve:ssm:${ProjectName}-S3Arn}}/*"
+              - Effect: Allow
+                Action:
+                  - glue:GetTable
+                  - glue:GetTableVersion
+                  - glue:GetTableVersions
+                Resource:
+                  - "*"
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-firehose-role"
