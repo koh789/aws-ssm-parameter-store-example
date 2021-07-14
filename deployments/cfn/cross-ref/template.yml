@@ -15,46 +15,6 @@ Parameters:
     Default: dummy2
 
 Resources:
-  FirehoseRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub "${ProjectName}-firehose-role"
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - "firehose.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Path: "/"
-      Policies:
-        - PolicyName: !Sub "${ProjectName}-firehose-policy"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:AbortMultipartUpload
-                  - s3:GetBucketLocation
-                  - s3:GetObject
-                  - s3:ListBucket
-                  - s3:ListBucketMultipartUploads
-                  - s3:PutObject
-                Resource: !Sub
-                  - "${Arn}/*"
-                  - Arn: !ImportValue "S3Arn"
-              - Effect: Allow
-                Action:
-                  - glue:GetTable
-                  - glue:GetTableVersion
-                  - glue:GetTableVersions
-                Resource:
-                  - "*"
-      Tags:
-        - Key: Name
-          Value: !Sub "${ProjectName}-firehose-role"
   # Glue database
   GlueDatabase:
     Type: "AWS::Glue::Database"
@@ -97,39 +57,3 @@ Resources:
               serialization.format: '1'
           BucketColumns: [ ]
           SortColumns: [ ]
-  ## ------------- Firehose -------------
-  FirehoseMobileAttribution:
-    Type: "AWS::KinesisFirehose::DeliveryStream"
-    Properties:
-      DeliveryStreamEncryptionConfigurationInput:
-        KeyType: AWS_OWNED_CMK
-      DeliveryStreamName: !Sub "${ProjectName}-firehose" # Replacement
-      DeliveryStreamType: DirectPut                                                          # Replacement
-      ExtendedS3DestinationConfiguration:
-        RoleARN: !GetAtt "FirehoseRole.Arn"
-        BucketARN: !ImportValue "S3Arn"
-        Prefix: !Sub "${S3FirehoseDir}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
-        ErrorOutputPrefix: !Sub "${S3FirehoseDir}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/!{firehose:error-output-type}"
-        BufferingHints:
-          SizeInMBs: 64
-          IntervalInSeconds: 60
-        CompressionFormat: UNCOMPRESSED # Record Format変換を使用する場合, 自動的にSnappy圧縮が選択されるため指定しない
-        S3BackupMode: Disabled
-        DataFormatConversionConfiguration:
-          SchemaConfiguration:
-            CatalogId: !Ref "AWS::AccountId"
-            RoleARN: !GetAtt "FirehoseRole.Arn"
-            DatabaseName: !Ref "GlueDatabase"
-            TableName: !Ref "GlueTable"
-            Region: !Ref "AWS::Region"
-            VersionId: LATEST
-          InputFormatConfiguration:
-            Deserializer:
-              OpenXJsonSerDe: { }
-          OutputFormatConfiguration:
-            Serializer:
-              ParquetSerDe: { }
-          Enabled: true
-      Tags:
-        - Key: Name
-          Value: !Sub "${ProjectName}"
