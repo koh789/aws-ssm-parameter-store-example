@@ -21,6 +21,10 @@ cfn-param-store-s3-deploy: ## deploy
 cfn-param-store-deploy: ## deploy
 	make internal-cfn-deploy CFN_PATH=deployments/cfn/param-store/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_TEMPlATE)
 
+.PHONY: cfn-param-store-update
+cfn-param-store-update: ## update
+	make internal-cfn-update CFN_PATH=deployments/cfn/param-store/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_TEMPlATE)
+
 .PHONY: cfn-param-store-all-delete
 cfn-param-store-all-delete: ## param store all delete
 	make internal-cfn-delete STACK_NAME=$(PROJECT_PARAM_STORE_S3)
@@ -49,6 +53,12 @@ internal-cfn-deploy: # [ args: STACK_NAME, CFN_PATH ]
 	--parameter-overrides ProjectName=$(PROJECT_NAME) \
 	--tags "Name=$(STACK_NAME)"
 
+.PHONE: internal-cfn-update
+internal-cfn-update: # [ args: STACK_NAME, CFN_PATH ]
+	aws cloudformation update-stack --capabilities CAPABILITY_NAMED_IAM \
+	--template-body file://$(CFN_PATH) \
+	--stack-name $(STACK_NAME) \
+    --parameters ParameterKey=ProjectName,ParameterValue=$(PROJECT_NAME) \
 
 .PHONY: internal-cfn-delete #  [ args: STACK_NAME ]
 internal-cfn-delete: # internal-cfn-delete

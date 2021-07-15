@@ -46,8 +46,6 @@ Resources:
           Columns:
             - Name: id
               Type: string
-            - Name: name
-              Type: string
           Location: !Sub
             - "s3://${S3Bucket}/${S3Dir}"
             - S3Bucket: !Sub "{{resolve:ssm:${ProjectName}-S3FirehoseBucketName}}"
