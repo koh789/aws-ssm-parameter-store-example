@@ -1,9 +1,11 @@
-PROJECT_CROSS_REFERENCE=dummy-cross-reference-paramter-project
-PROJECT_CROSS_REFERENCE_TEMPLATE=$(PROJECT_CROSS_REFERENCE)
-PROJECT_CROSS_REFERENCE_PROFILE=$(PROJECT_CROSS_REFERENCE)-instance-profile
-PROJECT_PARAM_STORE=dummy-paramter-store-project
+PROJECT_PARAM_STORE=dummy-param-store-project
 PROJECT_PARAM_STORE_TEMPlATE=$(PROJECT_PARAM_STORE)
-PROJECT_PARAM_STORE_PROFILE=$(PROJECT_PARAM_STORE)-instance-profile
+PROJECT_PARAM_STORE_S3=$(PROJECT_PARAM_STORE)-s3
+
+PROJECT_CROSS_REF=dummy-cross-ref-project
+PROJECT_CROSS_REF_TEMPlATE=$(PROJECT_CROSS_REF)
+PROJECT_CROSS_REF_S3=$(PROJECT_CROSS_REF)-s3
+
 
 .PHONY: help
 help: ## help 表示 `make help` でタスクの一覧を確認できます
@@ -11,31 +13,36 @@ help: ## help 表示 `make help` でタスクの一覧を確認できます
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36mmake %-20s\033[0m %s\n", $$1, $$2}'
 
 
-.PHONY: cfn-cross-reference-instance-profile-deploy
-cfn-cross-reference-instance-profile-deploy: ## cross reference instance profile deploy
-	make internal-cfn-deploy CFN_PATH=deployments/cfn/example1/instance-profile.yml PROJECT_NAME=$(PROJECT_CROSS_REFERENCE) STACK_NAME=$(PROJECT_CROSS_REFERENCE_PROFILE)
-
-.PHONY: cfn-cross-reference-deploy
-cfn-cross-reference-deploy: ## cross reference deploy
-	make internal-cfn-deploy CFN_PATH=deployments/cfn/example1/template.yml PROJECT_NAME=$(PROJECT_CROSS_REFERENCE) STACK_NAME=$(PROJECT_CROSS_REFERENCE)
-
-.PHONY: cfn-cross-reference-all-delete
-cfn-cross-reference-all-delete: ## cross reference all delete
-	make internal-cfn-delete STACK_NAME=$(PROJECT_CROSS_REFERENCE_PROFILE)
-	make internal-cfn-delete STACK_NAME=$(PROJECT_CROSS_REFERENCE)
-
-.PHONY: cfn-param-store-instance-profile-deploy
-cfn-param-store-instance-profile-deploy: ## param store instance profiledeploy
-	make internal-cfn-deploy CFN_PATH=deployments/cfn/example2/instance-profile.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_PROFILE)
+.PHONY: cfn-param-store-s3-deploy
+cfn-param-store-s3-deploy: ## deploy
+	make internal-cfn-deploy CFN_PATH=deployments/cfn/param-store/s3.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_S3)
 
 .PHONY: cfn-param-store-deploy
-cfn-param-store-deploy: ## param store deploy
-	make internal-cfn-deploy CFN_PATH=deployments/cfn/example2/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE)
+cfn-param-store-deploy: ## deploy
+	make internal-cfn-deploy CFN_PATH=deployments/cfn/param-store/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_TEMPlATE)
+
+.PHONY: cfn-param-store-update
+cfn-param-store-update: ## update
+	make internal-cfn-update CFN_PATH=deployments/cfn/param-store/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_TEMPlATE)
 
 .PHONY: cfn-param-store-all-delete
 cfn-param-store-all-delete: ## param store all delete
-	make internal-cfn-delete STACK_NAME=$(PROJECT_PARAM_STORE_PROFILE)
+	make internal-cfn-delete STACK_NAME=$(PROJECT_PARAM_STORE_S3)
 	make internal-cfn-delete STACK_NAME=$(PROJECT_PARAM_STORE)
+
+.PHONY: cfn-cross-ref-s3-deploy
+cfn-cross-ref-s3-deploy: ## deploy
+	make internal-cfn-deploy CFN_PATH=deployments/cfn/cross-ref/s3.yml PROJECT_NAME=$(PROJECT_CROSS_REF) STACK_NAME=$(PROJECT_CROSS_REF_S3)
+
+.PHONY: cfn-cross-ref-deploy
+cfn-cross-ref-deploy: ## deploy
+	make internal-cfn-deploy CFN_PATH=deployments/cfn/cross-ref/template.yml PROJECT_NAME=$(PROJECT_CROSS_REF) STACK_NAME=$(PROJECT_CROSS_REF_TEMPlATE)
+
+.PHONY: cfn-cross-ref-all-delete
+cfn-cross-ref-all-delete: ## param store all delete
+	make internal-cfn-delete STACK_NAME=$(PROJECT_CROSS_REF_S3)
+	make internal-cfn-delete STACK_NAME=$(PROJECT_CROSS_REF)
+
 
 .PHONY: internal-cfn-deploy
 internal-cfn-deploy: # [ args: STACK_NAME, CFN_PATH ]
@@ -46,6 +53,12 @@ internal-cfn-deploy: # [ args: STACK_NAME, CFN_PATH ]
 	--parameter-overrides ProjectName=$(PROJECT_NAME) \
 	--tags "Name=$(STACK_NAME)"
 
+.PHONE: internal-cfn-update
+internal-cfn-update: # [ args: STACK_NAME, CFN_PATH ]
+	aws cloudformation update-stack --capabilities CAPABILITY_NAMED_IAM \
+	--template-body file://$(CFN_PATH) \
+	--stack-name $(STACK_NAME) \
+    --parameters ParameterKey=ProjectName,ParameterValue=$(PROJECT_NAME) \
 
 .PHONY: internal-cfn-delete #  [ args: STACK_NAME ]
 internal-cfn-delete: # internal-cfn-delete

@@ -1,0 +1,31 @@
+Parameters:
+  ProjectName:
+    Type: String
+    AllowedValues:
+      - dummy-cross-ref-project
+      - dummy-param-store-project
+Resources:
+  ## ------------- S3 -------------
+  S3:
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: Delete # cfn delete時にS3Bucketを消す
+    Properties:
+      BucketName: !Sub "${ProjectName}-bucket"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-bucket"
+
+Outputs:
+  S3FirehoseBucketName:
+    Value: !Ref "S3"
+    Export:
+      Name: S3FirehoseBucketName
+  S3Arn:
+    Value: !GetAtt "S3.Arn"
+    Export:
+      Name: S3Arn
