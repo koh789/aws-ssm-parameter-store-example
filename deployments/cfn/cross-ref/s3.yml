@@ -25,7 +25,3 @@ Outputs:
     Value: !Ref "S3"
     Export:
       Name: S3FirehoseBucketName
-  S3Arn:
-    Value: !GetAtt "S3.Arn"
-    Export:
-      Name: S3Arn

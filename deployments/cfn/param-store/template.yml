@@ -48,7 +48,7 @@ Resources:
               Type: string
           Location: !Sub
             - "s3://${S3Bucket}/${S3Dir}"
-            - S3Bucket: !Sub "{{resolve:ssm:${ProjectName}-S3FirehoseBucketName}}"
+            - S3Bucket: !Sub "{{resolve:ssm:/${ProjectName}/S3FirehoseBucketName}}"
               S3Dir: !Ref "S3FirehoseDir"
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
