@@ -9,20 +9,24 @@ AWS SSMのDynamic reference検証用exampleです。
 
 s3 deploy 
 
-```cfn-param-store-s3-deploy```
+```make cfn-param-store-s3-deploy```
 
 
 Dynamic reference検証用. 参照側のdeploy
 
-```cfn-param-store-deploy```
+```make cfn-param-store-deploy```
+
+Dynamic reference検証用. 参照側のupdate
+
+```make cfn-param-store-update```
 
 ## CrossStack reference
 
 s3 deploy
 
-```cfn-cross-ref-s3-deploy```
+```make cfn-cross-ref-s3-deploy```
 
 Cross stack reference検証用. 参照側のdeploy
 
-```cfn-cross-ref-deploy```
+```make cfn-cross-ref-deploy```
 
