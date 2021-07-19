@@ -23,7 +23,8 @@ cfn-param-store-deploy: ## deploy
 
 .PHONY: cfn-param-store-update
 cfn-param-store-update: ## update
-	make internal-cfn-update CFN_PATH=deployments/cfn/param-store/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_TEMPlATE)
+	$(eval DUMMY_DESCRIPTION := dummy_$(shell date +"%Y-%m-%dT%T"))
+	make internal-cfn-update CFN_PATH=deployments/cfn/param-store/template.yml PROJECT_NAME=$(PROJECT_PARAM_STORE) STACK_NAME=$(PROJECT_PARAM_STORE_TEMPlATE) DUMMY_DESCRIPTION=$(DUMMY_DESCRIPTION)
 
 .PHONY: cfn-param-store-all-delete
 cfn-param-store-all-delete: ## param store all delete
@@ -54,11 +55,11 @@ internal-cfn-deploy: # [ args: STACK_NAME, CFN_PATH ]
 	--tags "Name=$(STACK_NAME)"
 
 .PHONE: internal-cfn-update
-internal-cfn-update: # [ args: STACK_NAME, CFN_PATH ]
+internal-cfn-update: # [ args: STACK_NAME, CFN_PATH, DUMMY_DESCRIPTION ]
 	aws cloudformation update-stack --capabilities CAPABILITY_NAMED_IAM \
 	--template-body file://$(CFN_PATH) \
 	--stack-name $(STACK_NAME) \
-    --parameters ParameterKey=ProjectName,ParameterValue=$(PROJECT_NAME) \
+    --parameters ParameterKey=ProjectName,ParameterValue=$(PROJECT_NAME) ParameterKey=DummyDescription,ParameterValue=$(DUMMY_DESCRIPTION)\
 
 .PHONY: internal-cfn-delete #  [ args: STACK_NAME ]
 internal-cfn-delete: # internal-cfn-delete
