@@ -4,6 +4,9 @@ Parameters:
     AllowedValues:
       - dummy-cross-ref-project
       - dummy-param-store-project
+  DummyDescription:
+    Type: String
+    Default: dummy
   S3FirehoseDir:
     Type: String
     Default: dummy_dir
@@ -30,6 +33,7 @@ Resources:
       CatalogId: !Ref "AWS::AccountId"  # Replacement
       DatabaseName: !Ref "GlueDatabase" # Replacement
       TableInput: # Replacement
+        Description: !Ref "DummyDescription"
         Name: !Ref "TableName"
         TableType: EXTERNAL_TABLE
         Parameters:
